@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    container_name: psa-backend
+    ports:
+      - '8000:8000'
+    volumes:
+      - backend-data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - milvus
+
+  frontend:
+    build: ./frontend
+    container_name: psa-frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend
+
+  milvus:
+    image: milvusdb/milvus:v2.3.10
+    container_name: psa-milvus
+    environment:
+      MILVUS_LOG_LEVEL: info
+    ports:
+      - '19530:19530'
+      - '9091:9091'
+    volumes:
+      - milvus-data:/var/lib/milvus
+
+volumes:
+  backend-data:
+  milvus-data:
